@@ -424,7 +424,7 @@ void Evaluation::evaluateOnExonLevel(list<State> *predictedExon, list<State> *an
      * 1 : overlap   FN
      * 2 : partial   FN
      * 3 : almost    FN (UTR:TP)
-     * 3 : correct   TP (not counted here, because exons could be annotated multiply)
+     * 4 : correct   TP (not counted here, because exons could be annotated multiply)
      */
 
     for (examined = annotatedExon->begin(); examined != annotatedExon->end(); examined++){
@@ -501,7 +501,7 @@ void Evaluation::evaluateOnGeneLevel(Transcript* const predictedGeneList, Transc
     * Check for each annotated Gene, whether it is completely correct predicted
     */
 
-   for(examined = annotatedGeneList; examined != NULL; examined = (Gene*) examined->next) {
+   for(examined = annotatedGeneList; examined != NULL; examined = examined->next) {
        numAnnoGenes++;
        correctPredicted = false;
        for (pred = predictedGeneList; pred != NULL && !correctPredicted; pred = pred->next) {
