@@ -27,8 +27,10 @@ int main( int argc, char* argv[] ){
 	}
 	Evaluation eval;
 	GBProcessor gbankanno(argv[1]), gbankpred(argv[2]);
-	if (gbankanno.fileType() != genbank || gbankpred.fileType() != genbank)
-	    throw ProjectError("Input files not in genbank format.");
+	if (gbankanno.fileType() != genbank)
+	    throw ProjectError("Annotations file not in genbank format.");
+	if (gbankpred.fileType() != genbank)
+	    throw ProjectError("Predictions file not in genbank format.");
 
 	AnnoSequence *annoseq = gbankanno.getAnnoSequenceList();
 	AnnoSequence *predseq = gbankpred.getAnnoSequenceList();
