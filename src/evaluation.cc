@@ -1,7 +1,7 @@
 /*
  * evaluation.cc
  *
- * License: Artistic License, see file LICENSE.TXT or 
+ * License: Artistic License, see file LICENSE.TXT or
  *          https://opensource.org/licenses/artistic-license-1.0
  */
 
@@ -31,11 +31,11 @@ void Evaluation::addToEvaluation(Transcript *predictedGenes, Transcript *annotat
 
     int oldgeneFN = geneFN;
     Transcript *predFW, *predBW, *annoFW, *annoBW;
-    
+
     predFW = Transcript::getGenesOnStrand(predictedGenes, plusstrand);
     predBW = Transcript::getGenesOnStrand(predictedGenes, minusstrand);
     annoFW = Transcript::getGenesOnStrand(annotatedGenes, plusstrand);
-    annoBW = Transcript::getGenesOnStrand(annotatedGenes, minusstrand);  
+    annoBW = Transcript::getGenesOnStrand(annotatedGenes, minusstrand);
     if (strand == bothstrands || strand == plusstrand) {
 	addToEvaluation(predFW, annoFW);
     }
@@ -102,7 +102,7 @@ void Evaluation::addToEvaluation(Transcript* predictedGeneList, Transcript* anno
 	}
 	g = g->next;
     }
- 
+
     g = annotatedGeneList;
     while (g) {
 	st = g->exons;
@@ -111,13 +111,13 @@ void Evaluation::addToEvaluation(Transcript* predictedGeneList, Transcript* anno
 	    st = st->next;
 	}
  	g = g->next;
-    }   
+    }
     numAnnoExons += annotatedExons->size();
     numPredExons += predictedExons->size();
     /*
      * make the list of unique
      */
-    
+
     predictedExons->sort();
     annotatedExons->sort();
     predictedExons->unique();
@@ -135,7 +135,7 @@ void Evaluation::addToEvaluation(Transcript* predictedGeneList, Transcript* anno
 
     /*
      * update the derived values
-     */ 
+     */
     // nucleotide level
     nukSens = (double) nukTP/(nukTP + nukFN);
     nukSpec = (double) nukTP/(nukTP + nukFP);
@@ -162,7 +162,7 @@ void Evaluation::addToEvaluation(Transcript* predictedGeneList, Transcript* anno
     numDataSets++;
 }
 
-void Evaluation::evaluateQuickOnNucleotideLevel(State* const predictedExon, int curPredBegin, 
+void Evaluation::evaluateQuickOnNucleotideLevel(State* const predictedExon, int curPredBegin,
 						State* const annotatedExon, int curAnnoBegin){
     if (curPredBegin < 0 && predictedExon) {
 	curPredBegin = predictedExon->begin;
@@ -215,9 +215,9 @@ void Evaluation::evaluateQuickOnNucleotideLevel(State* const predictedExon, int 
 		// predicted exon shorter
 		nukTP   += predictedExon->end - curPredBegin + 1;
 		nukTPBK += predictedExon->end - curPredBegin + 1;
-		evaluateQuickOnNucleotideLevel(predictedExon->next, -1, annotatedExon, predictedExon->end + 1); 
+		evaluateQuickOnNucleotideLevel(predictedExon->next, -1, annotatedExon, predictedExon->end + 1);
 	    } else if (annotatedExon->end < predictedExon->end) {
-		// annotated exon shorter	
+		// annotated exon shorter
 		nukTP   += annotatedExon->end - curAnnoBegin +1;
 		nukTPBK += annotatedExon->end - curAnnoBegin +1;
 		evaluateQuickOnNucleotideLevel(predictedExon, annotatedExon->end +1, annotatedExon->next, - 1);
@@ -232,7 +232,7 @@ void Evaluation::evaluateQuickOnNucleotideLevel(State* const predictedExon, int 
 }
 
 void Evaluation::evaluateOnNucleotideLevel(list<State> *predictedExon, list<State> *annotatedExon, bool UTR){
-    
+
   list<State>::iterator pred, anno;
   int n=0;
   char *nuc;
@@ -259,9 +259,9 @@ void Evaluation::evaluateOnNucleotideLevel(list<State> *predictedExon, list<Stat
 
    for (int i=0; i<=n; i++)
      nuc[i] = 0;
-  
+
     /*
-     * Loop over the predicted exons and find the predicted coding nucs 
+     * Loop over the predicted exons and find the predicted coding nucs
      */
   for (pred = predictedExon->begin(); pred != predictedExon->end(); pred++) {
       for (int i = (pred->begin >=0)? pred->begin : 0; i <= pred->end; i++){
@@ -271,13 +271,13 @@ void Evaluation::evaluateOnNucleotideLevel(list<State> *predictedExon, list<Stat
       }
   }
   /*
-   * Loop over the annotated exons and find the annotated coding nucs 
+   * Loop over the annotated exons and find the annotated coding nucs
    */
   for (anno = annotatedExon->begin(); anno != annotatedExon->end(); anno++) {
     for (int i = (anno->begin >= 0)? anno->begin : 0; i <= anno->end; i++)
       nuc[i] |= 1;
   }
-  
+
   /*
    * Now count the TP, FP and FN
    */
@@ -306,7 +306,7 @@ void Evaluation::evaluateOnNucleotideLevel(list<State> *predictedExon, list<Stat
 }
 
 void Evaluation::evaluateQuickOnExonLevel(State* predictedExon, State* annotatedExon){
-    
+
     State *examined, *firstOverlap, *lastOverlap;
 
     /*
@@ -331,7 +331,7 @@ void Evaluation::evaluateQuickOnExonLevel(State* predictedExon, State* annotated
 	    while (lastOverlap && lastOverlap->end < examined->end) {
 		lastOverlap = lastOverlap->next;
 	    }
-	    if ((firstOverlap->begin == examined->begin) || 
+	    if ((firstOverlap->begin == examined->begin) ||
 		(lastOverlap && (lastOverlap->end == examined->end))) {
 		exonFP_partial++;
 		exonFPBK++;
@@ -340,7 +340,7 @@ void Evaluation::evaluateQuickOnExonLevel(State* predictedExon, State* annotated
 		exonFPBK++;
 	    }
 	}
-    }  
+    }
     /*
      * Now go through the annotated exons and check for each one whether it is
      * one of the three kinds of false negatives.
@@ -361,7 +361,7 @@ void Evaluation::evaluateQuickOnExonLevel(State* predictedExon, State* annotated
 	    while (lastOverlap && lastOverlap->end < examined->end) {
 		lastOverlap = lastOverlap->next;
 	    }
-	    if ((firstOverlap->begin == examined->begin) || 
+	    if ((firstOverlap->begin == examined->begin) ||
 		(lastOverlap && (lastOverlap->end == examined->end))) {
 		exonFN_partial++;
 		exonFNBK++;
@@ -374,7 +374,7 @@ void Evaluation::evaluateQuickOnExonLevel(State* predictedExon, State* annotated
 }
 
 void Evaluation::evaluateOnExonLevel(list<State> *predictedExon, list<State> *annotatedExon, bool UTR){
-    
+
     list<State>::iterator examined, anno, pred;
     int klasse;
     /*
@@ -391,8 +391,8 @@ void Evaluation::evaluateOnExonLevel(list<State> *predictedExon, list<State> *an
 	klasse = 0;
 	for (anno = annotatedExon->begin(); anno != annotatedExon->end(); anno++){
 	    // overlaps with the annotated exon?
-	    if (!(examined->begin > anno->end || examined->end < anno->begin)) 
-		if (klasse<1) 
+	    if (!(examined->begin > anno->end || examined->end < anno->begin))
+		if (klasse<1)
 		    klasse = 1;
 	    // one splice site correct?
 	    if (examined->begin == anno->begin || examined->end == anno->end)
@@ -431,8 +431,8 @@ void Evaluation::evaluateOnExonLevel(list<State> *predictedExon, list<State> *an
 	klasse = 0;
 	for (pred = predictedExon->begin(); pred !=  predictedExon->end(); pred++) {
 	    // overlaps with the predicted exon?
-	    if (!(examined->begin > pred->end || examined->end < pred->begin)) 
-		if (klasse<1) 
+	    if (!(examined->begin > pred->end || examined->end < pred->begin))
+		if (klasse<1)
 		    klasse = 1;
 	    // one splice site correct?
 	    if (examined->begin == pred->begin || examined->end == pred->end)
@@ -549,7 +549,7 @@ void Evaluation::evaluateOnUTRLevel(Transcript* const predictedGeneList, Transcr
       predG = dynamic_cast<Gene*>(pred);
       if (!predG)
 	  continue; // ignore non-coding genes;
-      
+
       predTSS = (predG->strand == plusstrand)? predG->transstart : predG->transend;
       predTIS = (predG->strand == plusstrand)? predG->codingstart : predG->codingend;
       if (predTSS >= 0 && predG->complete5utr){
@@ -558,7 +558,7 @@ void Evaluation::evaluateOnUTRLevel(Transcript* const predictedGeneList, Transcr
 	      examinedG = dynamic_cast<Gene*>(examined);
 	      if (!examinedG)
 		  continue; // ignore non-coding genes;
-   
+
 	      annoTSS = (examinedG->strand == plusstrand)? examinedG->transstart : examinedG->transend;
 	      annoTIS = (examinedG->strand == plusstrand)? examinedG->codingstart : examinedG->codingend;
 	      if (annoTIS == predTIS && annoTSS >= 0){
@@ -724,68 +724,68 @@ void Evaluation::print(){
 
     // nucleotide level
     cout << "---------------------------------------------\\" << endl;
-    cout << setw(16) << " " << " | " << setw(11) << "sensitivity" << " | " 
+    cout << setw(16) << " " << " | " << setw(11) << "sensitivity" << " | "
 	 << setw(11) << "specificity" << " |" << endl;
     cout << "---------------------------------------------|" << endl;
     cout << setw(16) << "nucleotide level" << " | " << setw(11)
-	 << setprecision(3) << nukSens 
+	 << setprecision(3) << nukSens
 	 << " | " <<  setw(11) << setprecision(3) << nukSpec << " |" << endl;
     cout << "---------------------------------------------/" << endl << endl;
 
     // exon level
-    cout << "-----------------------------------------------------------------------------" 
+    cout << "-----------------------------------------------------------------------------"
 	 << "-----------------------------\\" << endl;
     cout << setw(10) << " " << " | " << setw(6) << "#pred" << " | " << setw(6) << "#anno"
-	 << " | " << setw(4) << " " << " | " << setw(18) << "FP = false pos." 
-	 << " | " << setw(18) << "FN = false neg." << " | " 
-	 << setw(11) << " " << " | " 
+	 << " | " << setw(4) << " " << " | " << setw(18) << "FP = false pos."
+	 << " | " << setw(18) << "FN = false neg." << " | "
+	 << setw(11) << " " << " | "
 	 << setw(11) << " " << " |" << endl;
     cout << setw(10) << " " << " | " << setw(6) << "total/" << " | " << setw(6) << "total/"
-	 << " | "  << setw(4) << "TP" << " |"<< setw(19) << "--------------------" 
-	 << "|" << setw(19) << "--------------------" 
-	 << "| " << setw(11) << "sensitivity" << " | " 
+	 << " | "  << setw(4) << "TP" << " |"<< setw(19) << "--------------------"
+	 << "|" << setw(19) << "--------------------"
+	 << "| " << setw(11) << "sensitivity" << " | "
 	 << setw(11) << "specificity" << " |" << endl;
     cout << setw(10) << " " << " | " << setw(6) << "unique" << " | " << setw(6) << "unique"
-	 << " | " << setw(4) << " " << " | " << setw(4) << "part" << " | " << setw(4) 
-	 << "ovlp" << " | "  << setw(4) << "wrng" << " | " <<  setw(4) << "part" 
-	 << " | " << setw(4) << "ovlp" << " | " 
-	 << setw(4) << "wrng" << " | " << setw(11) << " " << " | " 
+	 << " | " << setw(4) << " " << " | " << setw(4) << "part" << " | " << setw(4)
+	 << "ovlp" << " | "  << setw(4) << "wrng" << " | " <<  setw(4) << "part"
+	 << " | " << setw(4) << "ovlp" << " | "
+	 << setw(4) << "wrng" << " | " << setw(11) << " " << " | "
 	 << setw(11) << " " << " |" << endl;
-    cout << "-----------------------------------------------------------------------------" 
+    cout << "-----------------------------------------------------------------------------"
 	 << "-----------------------------|" << endl;
     cout << setw(10) << " " << " | " << setw(6) << " " << " | " << setw(6) << " "
-	 << " | " << setw(4) << " " << " | " << setw(18) << exonFP << " | " << setw(18) << exonFN 
-	 << " | " << setw(11) << " " << " | " 
+	 << " | " << setw(4) << " " << " | " << setw(18) << exonFP << " | " << setw(18) << exonFN
+	 << " | " << setw(11) << " " << " | "
 	 << setw(11) << " " << " |" << endl;
-    cout << setw(10) << "exon level" << " | " << setw(6) << numPredExons << " | " 
+    cout << setw(10) << "exon level" << " | " << setw(6) << numPredExons << " | "
 	 << setw(6) << numAnnoExons << " | " << setw(4) << exonTP << " | "
-	 << setw(18) << "------------------" << " | " << setw(18) << "------------------" 
-	 << " | " << setw(11) << setprecision(3) << exonSens << " | " 
+	 << setw(18) << "------------------" << " | " << setw(18) << "------------------"
+	 << " | " << setw(11) << setprecision(3) << exonSens << " | "
 	 << setw(11) << setprecision(3) << exonSpec << " |" << endl;
     cout << setw(10) << " " << " | " << setw(6) << numUniquePredExons << " | " << setw(6) << numUniqueAnnoExons
-	 << " | " << setw(4) << " " << " | " << setw(4) << exonFP_partial << " | " << setw(4) 
-	 << exonFP_overlapping << " | "  << setw(4) << exonFP_wrong << " | " <<  setw(4) 
-	 << exonFN_partial << " | " << setw(4) << exonFN_overlapping << " | " 
-	 << setw(4) << exonFN_wrong << " | " << setw(11) << " " << " | " 
+	 << " | " << setw(4) << " " << " | " << setw(4) << exonFP_partial << " | " << setw(4)
+	 << exonFP_overlapping << " | "  << setw(4) << exonFP_wrong << " | " <<  setw(4)
+	 << exonFN_partial << " | " << setw(4) << exonFN_overlapping << " | "
+	 << setw(4) << exonFN_wrong << " | " << setw(11) << " " << " | "
 	 << setw(11) << " " << " |" << endl;
-    cout << "-----------------------------------------------------------------------------" 
+    cout << "-----------------------------------------------------------------------------"
 	 << "-----------------------------/" << endl << endl;
     // transcript level
-    cout << "-----------------------------------------------------" 
+    cout << "-----------------------------------------------------"
 	 << "-----------------------\\" << endl;
-    cout << setw(10) << "transcript" << " | " << setw(5) << "#pred" << " | " 
-	 << setw(5) << "#anno" << " | " << setw(4) << "TP" << " | " 
-	 << setw(4) << "FP" << " | " << setw(4) << "FN" << " | " 
-	 << setw(11) << "sensitivity" << " | " 
+    cout << setw(10) << "transcript" << " | " << setw(5) << "#pred" << " | "
+	 << setw(5) << "#anno" << " | " << setw(4) << "TP" << " | "
+	 << setw(4) << "FP" << " | " << setw(4) << "FN" << " | "
+	 << setw(11) << "sensitivity" << " | "
 	 << setw(9) << "specificity" << " |" << endl;
-    cout << "------------------------------------------------------" 
+    cout << "------------------------------------------------------"
 	 << "----------------------|" << endl;
-    cout << setw(10) << "gene level" << " | " << setw(5) << numPredGenes << " | " 
-	 << setw(5) << numAnnoGenes << " | " << setw(4) << geneTP << " | " 
-	 << setw(4) << geneFP << " | " << setw(4) << geneFN << " | " 
-	 << setw(11) << setprecision(3) << geneSens << " | " 
+    cout << setw(10) << "gene level" << " | " << setw(5) << numPredGenes << " | "
+	 << setw(5) << numAnnoGenes << " | " << setw(4) << geneTP << " | "
+	 << setw(4) << geneFP << " | " << setw(4) << geneFN << " | "
+	 << setw(11) << setprecision(3) << geneSens << " | "
 	 << setw(11) << setprecision(3) << geneSpec << " |" << endl;
-    cout << "-------------------------------------------------------" 
+    cout << "-------------------------------------------------------"
 	 << "---------------------/" << endl;
     if (numTotalPredTSS > 0 || numTotalPredTTS > 0){
       // utr level
@@ -794,9 +794,9 @@ void Evaluation::print(){
       cout << setw(15) << "UTR" << " | "  << setw(10) << "total pred" << " | " << setw(14) << "CDS bnd. corr." << " | "
 	   << setw(10) << "meanDiff" << " | "<< setw(10) << "medianDiff" << " |" << endl;
       cout << "------------------------------------------------------------------------|" << endl;
-      cout << setw(15) << "TSS" << " | "  << setw(10) << numTotalPredTSS << " | " << setw(14) << numTSS << " | " 
+      cout << setw(15) << "TSS" << " | "  << setw(10) << numTotalPredTSS << " | " << setw(14) << numTSS << " | "
 	   << setw(10) << setprecision(3) << meanTssDist << " | " << setw(10) << medianTssDist << " |" << endl;
-      cout << setw(15) << "TTS" << " | "  << setw(10) << numTotalPredTTS << " | " << setw(14) << numTTS << " | " 
+      cout << setw(15) << "TTS" << " | "  << setw(10) << numTotalPredTTS << " | " << setw(14) << numTTS << " | "
 	   << setw(10) << setprecision(3) << meanTtsDist << " | " << setw(10) << medianTtsDist << " |" << endl;
       cout << "------------------------------------------------------------------------|" << endl;
       cout << setw(15) << "UTR" << " | "  << setw(10) << "uniq. pred" << " | " << setw(14) << "unique anno" << " | "
@@ -810,7 +810,7 @@ void Evaluation::print(){
            << setw(10) << setprecision(3) << nucUSens << " | " << setw(10) << nucUSpec << " |" << endl;
       cout << "------------------------------------------------------------------------/" << endl;
       cout << "nucUTP= " << nucUTP << " nucUFP=" << nucUFP << " nucUFPinside= " << nucUFPinside << " nucUFN=" << nucUFN << endl;
-  
+
     }
 
 
